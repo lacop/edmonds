@@ -27,7 +27,10 @@ Tested with Valgrind for memory leaks and invalid memory reads/writes.
 
 Code coverage tested with `lcov`, implementation has 100% coverage but is reported slightly lower, see the [report](https://lacop.github.io/edmonds/).
 
+
 Usage
 -----
 
 I don't recommend using this for anything serious since there are faster and more tested implementations. If you still wish to do so, refer to `main.cpp`.
+
+To build simply run `cmake .` and then `make`. If you don't have/like cmake just build and link `main.cpp` or `test.cpp` with all other files.
