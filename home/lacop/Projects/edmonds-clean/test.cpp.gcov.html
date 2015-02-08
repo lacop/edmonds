@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /home/lacop/Projects/edmonds-clean/test.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">home/lacop/Projects/edmonds-clean</a> - test.cpp<span style="font-size: 80%;"> (source / <a href="test.cpp.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">73</td>
+            <td class="headerCovTableEntry">84</td>
+            <td class="headerCovTableEntryMed">86.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2015-02-08</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #include &lt;iostream&gt;</a>
+<span class="lineNum">       2 </span>            : #include &lt;fstream&gt;
+<span class="lineNum">       3 </span>            : #include &lt;string&gt;
+<span class="lineNum">       4 </span>            : #include &lt;iomanip&gt;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;map&gt;
+<span class="lineNum">       7 </span>            : #include &lt;set&gt;
+<span class="lineNum">       8 </span>            : #include &lt;vector&gt;
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : #include &lt;chrono&gt;
+<span class="lineNum">      11 </span>            : #include &lt;thread&gt;
+<span class="lineNum">      12 </span>            : #include &lt;utility&gt;
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : 
+<a name="15"><span class="lineNum">      15 </span>            : #include &quot;EdmondsMatching.hpp&quot;</a>
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span><span class="lineCov">          1 : std::string TESTS_PATH = &quot;tests/&quot;;</span>
+<span class="lineNum">      18 </span><span class="lineCov">         26 : std::vector&lt;std::pair&lt;std::string, int&gt;&gt; tests = {</span>
+<span class="lineNum">      19 </span>            :         {&quot;test-6-1.in&quot;, 7},
+<span class="lineNum">      20 </span>            :         {&quot;test-8-1.in&quot;, 21},
+<span class="lineNum">      21 </span>            :         {&quot;test-10-1.in&quot;, 19},
+<span class="lineNum">      22 </span>            :         {&quot;test-10-2.in&quot;, -1},
+<span class="lineNum">      23 </span>            :         {&quot;test-14-1.in&quot;, 24},
+<span class="lineNum">      24 </span>            :         {&quot;test-x-1.in&quot;, 10},
+<span class="lineNum">      25 </span>            :         {&quot;test-x-2.in&quot;, 10},
+<span class="lineNum">      26 </span>            :         {&quot;test-x-3.in&quot;, 9},
+<span class="lineNum">      27 </span>            :         {&quot;test-edmt2.in&quot;, 158},
+<span class="lineNum">      28 </span>            :         {&quot;test-edmt3.in&quot;, 29},
+<span class="lineNum">      29 </span>            :         {&quot;test-edmt4.in&quot;, 55},
+<span class="lineNum">      30 </span>            :         {&quot;test-edmt5.in&quot;, 27},
+<span class="lineNum">      31 </span>            :         {&quot;test-edmt6.in&quot;, 40},
+<span class="lineNum">      32 </span>            :         {&quot;test-edmt7.in&quot;, 6924},
+<span class="lineNum">      33 </span>            :         {&quot;test-edmt8.in&quot;, 859},
+<span class="lineNum">      34 </span>            :         {&quot;test-edmt9.in&quot;, 726},
+<span class="lineNum">      35 </span>            :         {&quot;test-edmt10.in&quot;, 948},
+<span class="lineNum">      36 </span>            :         {&quot;test-edmt11.in&quot;, 1027},
+<span class="lineNum">      37 </span>            :         {&quot;test-edmt12.in&quot;, 1290},
+<span class="lineNum">      38 </span>            :         {&quot;test-edmt13.in&quot;, 800},
+<span class="lineNum">      39 </span>            :         {&quot;test-edmt14.in&quot;, 902},
+<span class="lineNum">      40 </span>            :         {&quot;test-edmt15.in&quot;, 723},
+<span class="lineNum">      41 </span>            :         {&quot;test-edmt20.in&quot;, 21},
+<span class="lineNum">      42 </span>            :         {&quot;test-edmt21.in&quot;, 18},
+<span class="lineNum">      43 </span>            :         {&quot;1000.in&quot;, 82612},
+<span class="lineNum">      44 </span><span class="lineCov">         25 : };</span>
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span><span class="lineCov">          1 : const std::string RESET         = &quot;\x1b[0m&quot;;</span>
+<span class="lineNum">      47 </span><span class="lineCov">          1 : const std::string BLINK         = &quot;\x1b[5m&quot;;</span>
+<span class="lineNum">      48 </span><span class="lineCov">          1 : const std::string GREEN         = &quot;\x1b[92m&quot;;</span>
+<span class="lineNum">      49 </span><span class="lineCov">          1 : const std::string GREEN_BACK    = &quot;\x1b[42m\x1b[1m&quot;;</span>
+<span class="lineNum">      50 </span><span class="lineCov">          1 : const std::string RED           = &quot;\x1b[91m\x1b[1m&quot;;</span>
+<span class="lineNum">      51 </span><span class="lineCov">          1 : const std::string RED_BACK      = &quot;\x1b[101m&quot;;</span>
+<span class="lineNum">      52 </span><span class="lineCov">          1 : const std::string CYAN          = &quot;\x1b[96m&quot;;</span>
+<a name="53"><span class="lineNum">      53 </span>            : </a>
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span><span class="lineCov">          1 : int main(int argc, char *argv[])</span>
+<span class="lineNum">      56 </span>            : {
+<span class="lineNum">      57 </span><span class="lineCov">          1 :     std::cout &lt;&lt; &quot;Starting tests ...&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">      58 </span><span class="lineCov">          1 :     int pass = 0;</span>
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span><span class="lineCov">         26 :     for (int i = 0; i &lt; tests.size(); i++)</span>
+<span class="lineNum">      61 </span>            :     {
+<span class="lineNum">      62 </span><span class="lineCov">         25 :         std::cout &lt;&lt; &quot;[&quot; &lt;&lt; tests[i].first &lt;&lt; &quot;]&quot;;</span>
+<span class="lineNum">      63 </span><span class="lineCov">         25 :         std::cout &lt;&lt; std::string(20-tests[i].first.length(), ' ');</span>
+<span class="lineNum">      64 </span><span class="lineCov">         25 :         std::cout &lt;&lt; BLINK &lt;&lt; CYAN &lt;&lt; &quot;RUNNING&quot;;</span>
+<span class="lineNum">      65 </span><span class="lineCov">         25 :         std::cout.flush();</span>
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span><span class="lineCov">         25 :         std::ifstream input(TESTS_PATH + tests[i].first, std::ios::in);</span>
+<span class="lineNum">      68 </span>            :         int n, m;
+<span class="lineNum">      69 </span><span class="lineCov">         25 :         input &gt;&gt; n &gt;&gt; m;</span>
+<span class="lineNum">      70 </span><span class="lineCov">         50 :         EdmondsMatching matching(n);</span>
+<span class="lineNum">      71 </span><span class="lineCov">         50 :         std::map&lt;std::pair&lt;int, int&gt;, int&gt; edges;</span>
+<span class="lineNum">      72 </span><span class="lineCov">      13410 :         for (int i = 0; i &lt; m; i++)</span>
+<span class="lineNum">      73 </span>            :         {
+<span class="lineNum">      74 </span>            :             int v1, v2, w;
+<span class="lineNum">      75 </span><span class="lineCov">      13385 :             input &gt;&gt; v1 &gt;&gt; v2 &gt;&gt; w;</span>
+<span class="lineNum">      76 </span>            :             // Zero based indexing
+<span class="lineNum">      77 </span><span class="lineCov">      13385 :             v1 -= 1;</span>
+<span class="lineNum">      78 </span><span class="lineCov">      13385 :             v2 -= 1;</span>
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span><span class="lineCov">      13385 :             if (v1 &gt; v2)</span>
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :                 std::swap(v1, v2);</span>
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span><span class="lineCov">      13385 :             edges[std::make_pair(v1, v2)] = w;</span>
+<span class="lineNum">      84 </span><span class="lineCov">      13385 :             matching.addEdge(v1, v2, w);</span>
+<span class="lineNum">      85 </span>            :         }
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span><span class="lineCov">         25 :         auto start = std::chrono::high_resolution_clock::now();</span>
+<span class="lineNum">      88 </span><span class="lineCov">         25 :         bool success = matching.findMinimumWeightMatching();</span>
+<span class="lineNum">      89 </span><span class="lineCov">         25 :         auto end = std::chrono::high_resolution_clock::now();</span>
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span><span class="lineCov">         25 :         std::cout &lt;&lt; &quot;\r&quot; &lt;&lt; RESET &lt;&lt; std::string(80, ' ');</span>
+<span class="lineNum">      92 </span><span class="lineCov">         25 :         std::cout &lt;&lt; &quot;\r[&quot; &lt;&lt; tests[i].first &lt;&lt; &quot;]&quot;;</span>
+<span class="lineNum">      93 </span><span class="lineCov">         25 :         std::cout &lt;&lt; std::string(20-tests[i].first.length(), ' ');</span>
+<span class="lineNum">      94 </span><span class="lineCov">         25 :         std::cout &lt;&lt; CYAN &lt;&lt; &quot;DONE&quot; &lt;&lt; RESET &lt;&lt; &quot;\t&quot;;</span>
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span><span class="lineCov">         25 :         int got = (success) ? matching.getMatchingWeight() : -1;</span>
+<span class="lineNum">      97 </span><span class="lineCov">         25 :         std::cout &lt;&lt; &quot;Expected: &quot; &lt;&lt; std::setfill(' ') &lt;&lt; std::setw(5)</span>
+<span class="lineNum">      98 </span><span class="lineCov">         50 :                   &lt;&lt; tests[i].second &lt;&lt; &quot; Got: &quot;</span>
+<span class="lineNum">      99 </span><span class="lineCov">         50 :                   &lt;&lt; std::setfill(' ') &lt;&lt; std::setw(5) &lt;&lt; got &lt;&lt; &quot;\t&quot;;</span>
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span><span class="lineCov">         25 :         bool invalid = false;</span>
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span><span class="lineCov">         25 :         if (got != tests[i].second)</span>
+<span class="lineNum">     104 </span>            :         {
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 :             invalid = true;</span>
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :             std::cout &lt;&lt; RED_BACK &lt;&lt; &quot;MISMATCH\t\t&quot;;</span>
+<span class="lineNum">     107 </span>            :         }
+<span class="lineNum">     108 </span>            :         else
+<span class="lineNum">     109 </span><span class="lineCov">         25 :             std::cout &lt;&lt; GREEN_BACK &lt;&lt; &quot;  MATCH &quot;;</span>
+<span class="lineNum">     110 </span><span class="lineCov">         25 :         std::cout &lt;&lt; RESET &lt;&lt; &quot;\t&quot;;</span>
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span><span class="lineCov">         25 :         if (tests[i].second == -1)</span>
+<span class="lineNum">     113 </span><span class="lineCov">          1 :             std::cout &lt;&lt; &quot;\t\t&quot;;</span>
+<span class="lineNum">     114 </span><span class="lineCov">         24 :         else if (got == tests[i].second)</span>
+<span class="lineNum">     115 </span>            :         {
+<span class="lineNum">     116 </span><span class="lineCov">         24 :             int weight = 0;</span>
+<span class="lineNum">     117 </span><span class="lineCov">         24 :             std::set&lt;int&gt; vertices;</span>
+<span class="lineNum">     118 </span><span class="lineCov">       1442 :             for (auto edge: matching.getMatchedEdges())</span>
+<span class="lineNum">     119 </span>            :             {
+<span class="lineNum">     120 </span><span class="lineCov">        697 :                 int v1 = edge.first;</span>
+<span class="lineNum">     121 </span><span class="lineCov">        697 :                 int v2 = edge.second;</span>
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span><span class="lineCov">        697 :                 if (v1 == v2 || vertices.count(v1) &gt; 0 || vertices.count(v2) &gt; 0)</span>
+<span class="lineNum">     124 </span>            :                 {
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :                     invalid = true;</span>
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :                     break;</span>
+<span class="lineNum">     127 </span>            :                 }
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span><span class="lineCov">        697 :                 vertices.insert(v1);</span>
+<span class="lineNum">     130 </span><span class="lineCov">        697 :                 vertices.insert(v2);</span>
+<span class="lineNum">     131 </span>            : 
+<span class="lineNum">     132 </span><span class="lineCov">        697 :                 if (v1 &gt; v2)</span>
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 :                     std::swap(v1, v2);</span>
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span><span class="lineCov">        697 :                 if (edges.count(std::make_pair(v1, v2)) != 1)</span>
+<span class="lineNum">     136 </span>            :                 {
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :                     invalid = true;</span>
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :                     break;</span>
+<span class="lineNum">     139 </span>            :                 }
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span><span class="lineCov">        697 :                 weight += edges[std::make_pair(v1, v2)];</span>
+<span class="lineNum">     142 </span><span class="lineCov">         24 :             }</span>
+<span class="lineNum">     143 </span><span class="lineCov">         24 :             if (weight != got || vertices.size() != n)</span>
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :                 invalid = true;</span>
+<span class="lineNum">     145 </span>            : 
+<span class="lineNum">     146 </span><span class="lineCov">         24 :             if (invalid)</span>
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :                 std::cout &lt;&lt; RED_BACK &lt;&lt; &quot;INVALID&quot;;</span>
+<span class="lineNum">     148 </span>            :             else
+<span class="lineNum">     149 </span><span class="lineCov">         24 :                 std::cout &lt;&lt; GREEN_BACK &lt;&lt; &quot;  VALID&quot;;</span>
+<span class="lineNum">     150 </span><span class="lineCov">         24 :             std::cout &lt;&lt; RESET &lt;&lt; &quot;\t\t&quot;;</span>
+<span class="lineNum">     151 </span>            :         }
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span><span class="lineCov">         25 :         int ms = std::chrono::duration_cast&lt;std::chrono::milliseconds&gt;(end-start).count();</span>
+<span class="lineNum">     154 </span><span class="lineCov">         25 :         std::cout &lt;&lt; &quot;Time: &quot; &lt;&lt; ms &lt;&lt; &quot;ms&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span><span class="lineCov">         25 :         pass += !invalid;</span>
+<span class="lineNum">     157 </span><span class="lineCov">         25 :     }</span>
+<span class="lineNum">     158 </span>            : 
+<span class="lineNum">     159 </span><span class="lineCov">          1 :     if (pass == tests.size())</span>
+<span class="lineNum">     160 </span><span class="lineCov">          1 :         std::cout &lt;&lt; GREEN;</span>
+<span class="lineNum">     161 </span>            :     else
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 :         std::cout &lt;&lt; RED;</span>
+<span class="lineNum">     163 </span><span class="lineCov">          1 :     std::cout &lt;&lt; &quot;Finished all tests. &quot;</span>
+<a name="164"><span class="lineNum">     164 </span><span class="lineCov">          2 :               &lt;&lt; &quot;Passed: &quot; &lt;&lt; pass &lt;&lt; &quot;/&quot; &lt;&lt; tests.size();</span></a>
+<span class="lineNum">     165 </span><span class="lineCov">          1 :     std::cout &lt;&lt; RESET &lt;&lt; std::endl;</span>
+<span class="lineNum">     166 </span><span class="lineCov">          4 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

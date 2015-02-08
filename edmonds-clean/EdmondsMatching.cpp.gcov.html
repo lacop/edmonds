@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage2.info - edmonds-clean/EdmondsMatching.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">edmonds-clean</a> - EdmondsMatching.cpp<span style="font-size: 80%;"> (source / <a href="EdmondsMatching.cpp.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage2.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">64</td>
+            <td class="headerCovTableEntry">64</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2015-02-08</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #include &quot;EdmondsMatching.hpp&quot;</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #include &quot;assert.h&quot;
+<span class="lineNum">       4 </span>            : #include &lt;algorithm&gt;
+<a name="5"><span class="lineNum">       5 </span>            : #include &lt;limits&gt;</a>
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span><span class="lineCov">         25 : EdmondsMatching::EdmondsMatching(int numberOfVertices)</span>
+<span class="lineNum">       8 </span>            : {
+<span class="lineNum">       9 </span><span class="lineCov">         25 :     ASSERT(numberOfVertices % 2 == 0, &quot;numOfVertices should be even&quot;);</span>
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span><span class="lineCov">         25 :     this-&gt;numberOfVertices = numberOfVertices;</span>
+<span class="lineNum">      12 </span><span class="lineCov">         25 :     this-&gt;matchingSize = 0;</span>
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span><span class="lineCov">         25 :     vertices.reserve(numberOfVertices);</span>
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span><span class="lineCov">       1429 :     for (int i = 0; i &lt; numberOfVertices; i++)</span>
+<span class="lineNum">      17 </span>            :     {
+<span class="lineNum">      18 </span><span class="lineCov">       1404 :         vertices.push_back(std::unique_ptr&lt;Vertex&gt;(new Vertex(i)));</span>
+<span class="lineNum">      19 </span><span class="lineCov">       1404 :         roots.push_back(vertices.back().get());</span>
+<span class="lineNum">      20 </span>            :     }
+<a name="21"><span class="lineNum">      21 </span><span class="lineCov">         25 : }</span></a>
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span><span class="lineCov">      13385 : void EdmondsMatching::addEdge(int v1id, int v2id, int weight)</span>
+<span class="lineNum">      24 </span>            : {
+<span class="lineNum">      25 </span><span class="lineCov">      13385 :     Vertex* v1 = vertices[v1id].get();</span>
+<span class="lineNum">      26 </span><span class="lineCov">      13385 :     Vertex* v2 = vertices[v2id].get();</span>
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span><span class="lineCov">      13385 :     ASSERT(v1 != v2, &quot;Graph can't contain loops.&quot;);</span>
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span><span class="lineCov">      13385 :     edges.push_back(std::unique_ptr&lt;Edge&gt;(new Edge(this, v1, v2, weight)));</span>
+<a name="31"><span class="lineNum">      31 </span><span class="lineCov">      13385 : }</span></a>
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span><span class="lineCov">        970 : bool EdmondsMatching::findMinimumWeightMatching()</span>
+<span class="lineNum">      34 </span>            : {
+<span class="lineNum">      35 </span>            :     while(true)
+<span class="lineNum">      36 </span>            :     {
+<span class="lineNum">      37 </span>            :         // Find the minimum across all edges of the maximum charge
+<span class="lineNum">      38 </span>            :         // that edge can tolerate before some invariant gets violated
+<span class="lineNum">      39 </span><span class="lineCov">        970 :         double min_reserve = std::numeric_limits&lt;double&gt;::infinity();</span>
+<span class="lineNum">      40 </span><span class="lineCov">    7055769 :         for (auto const &amp;edge : edges)</span>
+<span class="lineNum">      41 </span>            :         {
+<span class="lineNum">      42 </span><span class="lineCov">    7054799 :             double edge_reserve = edge-&gt;getMaxCharge();</span>
+<span class="lineNum">      43 </span><span class="lineCov">    7054799 :             min_reserve = std::min(min_reserve, edge_reserve);</span>
+<span class="lineNum">      44 </span>            :         }
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            :         // Add this charge to all trees
+<span class="lineNum">      47 </span><span class="lineCov">     142716 :         for (auto const &amp;root: roots)</span>
+<span class="lineNum">      48 </span><span class="lineCov">     141746 :             root-&gt;updateCharge(min_reserve);</span>
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            :         // Keep changing until nothing happens
+<span class="lineNum">      51 </span><span class="lineCov">        970 :         bool change = false;</span>
+<span class="lineNum">      52 </span>            :         while (true)
+<span class="lineNum">      53 </span>            :         {
+<span class="lineNum">      54 </span><span class="lineCov">       4044 :             bool round = false;</span>
+<span class="lineNum">      55 </span><span class="lineCov">     628612 :             for (auto const &amp;root: roots)</span>
+<span class="lineNum">      56 </span>            :             {
+<span class="lineNum">      57 </span><span class="lineCov">     624603 :                 if (root-&gt;updateTree())</span>
+<span class="lineNum">      58 </span>            :                 {
+<span class="lineNum">      59 </span><span class="lineCov">         35 :                     round = change = true;</span>
+<span class="lineNum">      60 </span><span class="lineCov">         35 :                     break;</span>
+<span class="lineNum">      61 </span>            :                 }
+<span class="lineNum">      62 </span>            :             }
+<span class="lineNum">      63 </span><span class="lineCov">       4044 :             if (round)</span>
+<span class="lineNum">      64 </span><span class="lineCov">         35 :                 continue;</span>
+<span class="lineNum">      65 </span><span class="lineCov">   20430715 :             for (auto const &amp;edge: edges)</span>
+<span class="lineNum">      66 </span>            :             {
+<span class="lineNum">      67 </span><span class="lineCov">   20429745 :                 if (edge-&gt;update())</span>
+<span class="lineNum">      68 </span>            :                 {
+<span class="lineNum">      69 </span><span class="lineCov">       3039 :                     round = change = true;</span>
+<span class="lineNum">      70 </span><span class="lineCov">       3039 :                     break;</span>
+<span class="lineNum">      71 </span>            :                 }
+<span class="lineNum">      72 </span>            :             }
+<span class="lineNum">      73 </span><span class="lineCov">       4009 :             if (round)</span>
+<span class="lineNum">      74 </span><span class="lineCov">       3039 :                 continue;</span>
+<span class="lineNum">      75 </span>            :             // Nothing has changed this round so we are done
+<span class="lineNum">      76 </span><span class="lineCov">        970 :             break;</span>
+<span class="lineNum">      77 </span>            :         }
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            :         // If nothing has changed and no charge can be added we are stuck
+<span class="lineNum">      80 </span><span class="lineCov">        970 :         if (!change &amp;&amp; min_reserve == 0)</span>
+<span class="lineNum">      81 </span><span class="lineCov">         25 :             return false;</span>
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            :         // If we have found a matching it must be optimal
+<span class="lineNum">      84 </span><span class="lineCov">        970 :         if (matchingSize*2 == numberOfVertices)</span>
+<span class="lineNum">      85 </span><span class="lineCov">         24 :             return true;</span>
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span>            :         // If we can add any charge there is no perfect matching
+<span class="lineNum">      88 </span><span class="lineCov">        946 :         if (min_reserve == std::numeric_limits&lt;double&gt;::infinity())</span>
+<span class="lineNum">      89 </span><span class="lineCov">          1 :             return false;</span>
+<span class="lineNum">      90 </span><span class="lineCov">       4019 :     }</span>
+<a name="91"><span class="lineNum">      91 </span>            : }</a>
+<span class="lineNum">      92 </span>            : 
+<span class="lineNum">      93 </span><span class="lineCov">       1435 : void EdmondsMatching::removeRootFromForest(Blossom *root)</span>
+<span class="lineNum">      94 </span>            : {
+<span class="lineNum">      95 </span><span class="lineCov">       1435 :     roots.remove(root);</span>
+<a name="96"><span class="lineNum">      96 </span><span class="lineCov">       1435 : }</span></a>
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span><span class="lineCov">         33 : void EdmondsMatching::addRootToForest(Blossom *root)</span>
+<span class="lineNum">      99 </span>            : {
+<span class="lineNum">     100 </span><span class="lineCov">         33 :     roots.push_back(root);</span>
+<a name="101"><span class="lineNum">     101 </span><span class="lineCov">         33 : }</span></a>
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span><span class="lineCov">         24 : int EdmondsMatching::getMatchingWeight()</span>
+<span class="lineNum">     104 </span>            : {
+<span class="lineNum">     105 </span><span class="lineCov">         24 :     int weight = 0;</span>
+<span class="lineNum">     106 </span><span class="lineCov">      13399 :     for (auto const&amp; edge: edges)</span>
+<span class="lineNum">     107 </span>            :     {
+<span class="lineNum">     108 </span><span class="lineCov">      13375 :         if (edge-&gt;isMatched())</span>
+<span class="lineNum">     109 </span><span class="lineCov">        697 :             weight += edge-&gt;getWeight();</span>
+<span class="lineNum">     110 </span>            :     }
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span><span class="lineCov">         24 :     return weight;</span>
+<a name="113"><span class="lineNum">     113 </span>            : }</a>
+<span class="lineNum">     114 </span>            : 
+<span class="lineNum">     115 </span><span class="lineCov">         24 : std::vector&lt;std::pair&lt;int, int&gt;&gt; EdmondsMatching::getMatchedEdges()</span>
+<span class="lineNum">     116 </span>            : {
+<span class="lineNum">     117 </span><span class="lineCov">         24 :     std::vector&lt;std::pair&lt;int, int&gt;&gt; result;</span>
+<span class="lineNum">     118 </span><span class="lineCov">         24 :     result.reserve(matchingSize);</span>
+<span class="lineNum">     119 </span>            : 
+<span class="lineNum">     120 </span><span class="lineCov">      13399 :     for (auto const&amp; edge: edges)</span>
+<span class="lineNum">     121 </span>            :     {
+<span class="lineNum">     122 </span><span class="lineCov">      13375 :         if (edge-&gt;isMatched())</span>
+<span class="lineNum">     123 </span>            :         {
+<span class="lineNum">     124 </span><span class="lineCov">        697 :             result.emplace_back(edge-&gt;getV1()-&gt;id, edge-&gt;getV2()-&gt;id);</span>
+<span class="lineNum">     125 </span>            :         }
+<span class="lineNum">     126 </span>            :     }
+<a name="127"><span class="lineNum">     127 </span>            : </a>
+<span class="lineNum">     128 </span><span class="lineCov">         24 :     return result;</span>
+<span class="lineNum">     129 </span><span class="lineCov">          3 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,579 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage2.info - edmonds-clean/Blossom.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">edmonds-clean</a> - Blossom.cpp<span style="font-size: 80%;"> (source / <a href="Blossom.cpp.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage2.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">250</td>
+            <td class="headerCovTableEntry">253</td>
+            <td class="headerCovTableEntryHi">98.8 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2015-02-08</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">19</td>
+            <td class="headerCovTableEntry">19</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #include &quot;Blossom.hpp&quot;</a>
+<span class="lineNum">       2 </span>            : #include &quot;Edge.hpp&quot;
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;assert.h&quot;
+<a name="5"><span class="lineNum">       5 </span>            : #include &lt;algorithm&gt;</a>
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span><span class="lineCov">       1498 : Blossom::Blossom()</span>
+<span class="lineNum">       8 </span>            : {
+<span class="lineNum">       9 </span><span class="lineCov">       1498 :     charge = 0;</span>
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span><span class="lineCov">       1498 :     treeLevel = TreeLevel::EVEN;</span>
+<span class="lineNum">      12 </span><span class="lineCov">       1498 :     treeParentBlossom = nullptr;</span>
+<span class="lineNum">      13 </span><span class="lineCov">       1498 :     treeParentEdge = nullptr;</span>
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span><span class="lineCov">       1498 :     outwardBlossom = nullptr;</span>
+<a name="16"><span class="lineNum">      16 </span><span class="lineCov">       1498 : }</span></a>
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span><span class="lineCov">     260844 : void Blossom::addCharge(double delta)</span>
+<span class="lineNum">      19 </span>            : {
+<span class="lineNum">      20 </span><span class="lineCov">     260844 :     charge += delta;</span>
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            :     // Update total charge for all vertices contained
+<span class="lineNum">      23 </span>            :     // in this blossom and all sub-blossoms recursively
+<span class="lineNum">      24 </span><span class="lineCov">     260844 :     updateVertexTotal(delta);</span>
+<a name="25"><span class="lineNum">      25 </span><span class="lineCov">     260844 : }</span></a>
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span><span class="lineCov">     114604 : double Blossom::getMaxNegativeCharge()</span>
+<span class="lineNum">      28 </span>            : {
+<span class="lineNum">      29 </span>            :     // For non-vertex blossoms the charge must remain &gt;= 0
+<span class="lineNum">      30 </span><span class="lineCov">     114604 :     return getCharge();</span>
+<a name="31"><span class="lineNum">      31 </span>            : }</a>
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span><span class="lineCov">        544 : void Blossom::updateVertexTotal(double delta)</span>
+<span class="lineNum">      34 </span>            : {
+<span class="lineNum">      35 </span><span class="lineCov">       5952 :     for (auto const&amp; inner: innerChildren)</span>
+<span class="lineNum">      36 </span><span class="lineCov">       5408 :         inner-&gt;updateVertexTotal(delta);</span>
+<a name="37"><span class="lineNum">      37 </span><span class="lineCov">        544 : }</span></a>
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span><span class="lineCov">     260844 : void Blossom::updateCharge(double reserve)</span>
+<span class="lineNum">      40 </span>            : {
+<span class="lineNum">      41 </span><span class="lineCov">     260844 :     ASSERT(getTreeLevel() != TreeLevel::DUMBBELL, &quot;No dumbbell can be in the forest.&quot;);</span>
+<span class="lineNum">      42 </span><span class="lineCov">     260844 :     ASSERT(this-&gt;outwardBlossom == nullptr, &quot;This blossom is contained in another&quot;);</span>
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            :     // If we are on even level we get positive charge,
+<span class="lineNum">      45 </span>            :     // negative charge on odd level
+<span class="lineNum">      46 </span><span class="lineCov">     260844 :     if (getTreeLevel() == TreeLevel::EVEN)</span>
+<span class="lineNum">      47 </span><span class="lineCov">     201295 :         addCharge(reserve);</span>
+<span class="lineNum">      48 </span>            :     else
+<span class="lineNum">      49 </span><span class="lineCov">      59549 :         addCharge(-reserve);</span>
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            :     // Recursively update all tree children
+<span class="lineNum">      52 </span><span class="lineCov">     379942 :     for (auto const&amp; child : treeChildren)</span>
+<span class="lineNum">      53 </span><span class="lineCov">     119098 :         child-&gt;updateCharge(reserve);</span>
+<a name="54"><span class="lineNum">      54 </span><span class="lineCov">     260844 : }</span></a>
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span><span class="lineCov">    1160709 : bool Blossom::updateTree()</span>
+<span class="lineNum">      57 </span>            : {
+<span class="lineNum">      58 </span><span class="lineCov">    1160709 :     ASSERT(this-&gt;outwardBlossom.get() == nullptr, &quot;This blossom is contained in another&quot;);</span>
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            :     // Handle children first, since disassembling blossom will mess things up
+<span class="lineNum">      61 </span><span class="lineCov">    1696606 :     for (auto const &amp;child : treeChildren)</span>
+<span class="lineNum">      62 </span>            :     {
+<span class="lineNum">      63 </span>            :         // Stop after first change
+<span class="lineNum">      64 </span><span class="lineCov">     536106 :         if (child-&gt;updateTree())</span>
+<span class="lineNum">      65 </span><span class="lineCov">        209 :             return true;</span>
+<span class="lineNum">      66 </span>            :     }
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            :     // Case (P1) - non-vertex blossom on odd level has reached zero charge,
+<span class="lineNum">      69 </span>            :     // disassemble it
+<span class="lineNum">      70 </span><span class="lineCov">    1160500 :     if (getMaxNegativeCharge() == 0 &amp;&amp; getTreeLevel() == TreeLevel::ODD)</span>
+<span class="lineNum">      71 </span>            :     {
+<span class="lineNum">      72 </span><span class="lineCov">         35 :         disassembleBlossom();</span>
+<span class="lineNum">      73 </span><span class="lineCov">         35 :         return true;</span>
+<span class="lineNum">      74 </span>            :     }
+<span class="lineNum">      75 </span>            : 
+<span class="lineNum">      76 </span><span class="lineCov">    1160465 :     return false;</span>
+<a name="77"><span class="lineNum">      77 </span>            : }</a>
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span><span class="lineCov">   54978915 : Blossom* Blossom::getOutermostBlossom()</span>
+<span class="lineNum">      80 </span>            : {
+<span class="lineNum">      81 </span><span class="lineCov">   54978915 :     Blossom* outermost = this;</span>
+<span class="lineNum">      82 </span><span class="lineCov">  111846670 :     while (outermost-&gt;outwardBlossom.get() != nullptr)</span>
+<span class="lineNum">      83 </span><span class="lineCov">    1888840 :         outermost = outermost-&gt;outwardBlossom.get();</span>
+<span class="lineNum">      84 </span><span class="lineCov">   54978915 :     return outermost;</span>
+<a name="85"><span class="lineNum">      85 </span>            : }</a>
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span><span class="lineCov">        731 : Blossom *Blossom::getInnerBlossomContaining(Vertex *v)</span>
+<span class="lineNum">      88 </span>            : {
+<span class="lineNum">      89 </span><span class="lineCov">        731 :     Blossom *inner = v;</span>
+<span class="lineNum">      90 </span><span class="lineCov">       1660 :     while (inner != nullptr &amp;&amp; inner-&gt;outwardBlossom.get() != this)</span>
+<span class="lineNum">      91 </span><span class="lineCov">        198 :         inner = inner-&gt;outwardBlossom.get();</span>
+<span class="lineNum">      92 </span><span class="lineCov">        731 :     ASSERT(inner != nullptr, &quot;Vertex v is not part of any inner blossoms&quot;);</span>
+<span class="lineNum">      93 </span><span class="lineCov">        731 :     return inner;</span>
+<a name="94"><span class="lineNum">      94 </span>            : }</a>
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span><span class="lineCov">       1590 : Blossom* Blossom::getRootBlossom()</span>
+<span class="lineNum">      97 </span>            : {
+<span class="lineNum">      98 </span><span class="lineCov">       1590 :     Blossom* root = this;</span>
+<span class="lineNum">      99 </span><span class="lineCov">       6354 :     while (root-&gt;treeParentBlossom != nullptr)</span>
+<span class="lineNum">     100 </span><span class="lineCov">       3174 :         root = root-&gt;treeParentBlossom;</span>
+<span class="lineNum">     101 </span><span class="lineCov">       1590 :     return root;</span>
+<a name="102"><span class="lineNum">     102 </span>            : }</a>
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span><span class="lineCov">        622 : Vertex* Blossom::getStem()</span>
+<span class="lineNum">     105 </span>            : {
+<span class="lineNum">     106 </span><span class="lineCov">        622 :     ASSERT(innerChildren.size() &gt; 0, &quot;This non-vertex blossom has no inner blossoms.&quot;);</span>
+<span class="lineNum">     107 </span><span class="lineCov">        622 :     return innerChildren[0]-&gt;getStem();</span>
+<a name="108"><span class="lineNum">     108 </span>            : }</a>
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span><span class="lineCov">       2640 : void Blossom::flipPathAndDisassemble(Vertex *v, Blossom *pair, Edge *pairEdge)</span>
+<span class="lineNum">     111 </span>            : {
+<span class="lineNum">     112 </span><span class="lineCov">       2640 :     ASSERT(this-&gt;outwardBlossom == nullptr, &quot;This blossom is contained in another&quot;);</span>
+<span class="lineNum">     113 </span><span class="lineCov">       2640 :     ASSERT(pair == nullptr || getTreeLevel() == TreeLevel::EVEN,</span>
+<span class="lineNum">     114 </span><span class="lineNoCov">          0 :            &quot;Can only form dumbbell from even level blossom with odd level child.&quot;);</span>
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span>            :     // Flip path between v and the vertex connecting us to parent
+<span class="lineNum">     117 </span>            :     // For even level this is the stem, for odd level we must find it
+<span class="lineNum">     118 </span><span class="lineCov">       2640 :     Vertex *v2 = getStem();</span>
+<span class="lineNum">     119 </span><span class="lineCov">       2640 :     if (getTreeLevel() == TreeLevel::ODD)</span>
+<span class="lineNum">     120 </span>            :     {
+<span class="lineNum">     121 </span><span class="lineCov">        619 :         v2 = treeParentEdge-&gt;getV1();</span>
+<span class="lineNum">     122 </span><span class="lineCov">        619 :         if (v2-&gt;getOutermostBlossom() != this)</span>
+<span class="lineNum">     123 </span><span class="lineCov">        299 :             v2 = treeParentEdge-&gt;getV2();</span>
+<span class="lineNum">     124 </span><span class="lineCov">        619 :         ASSERT(v2-&gt;getOutermostBlossom() == this, &quot;Neither edge endpoint in this blossom&quot;);</span>
+<span class="lineNum">     125 </span>            :     }
+<span class="lineNum">     126 </span><span class="lineCov">       2640 :     flipPathBetween(v, v2);</span>
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            :     // Disconnect all children and disassemble into dumbbells
+<span class="lineNum">     129 </span>            :     // Only do this in even level blossom since odd level ones only have a single
+<span class="lineNum">     130 </span>            :     // child with which we will be forming dumbbell anyway.
+<span class="lineNum">     131 </span><span class="lineCov">       2640 :     if (getTreeLevel() == TreeLevel::EVEN)</span>
+<span class="lineNum">     132 </span>            :     {
+<span class="lineNum">     133 </span><span class="lineCov">       3203 :         for (auto const &amp;child: treeChildren)</span>
+<span class="lineNum">     134 </span>            :         {
+<span class="lineNum">     135 </span>            :             // Skip the child blossom with which we will form a dumbbell
+<span class="lineNum">     136 </span><span class="lineCov">       1182 :             if (child != pair)</span>
+<span class="lineNum">     137 </span><span class="lineCov">        563 :                 child-&gt;disassembleTreeIntoDumbbells();</span>
+<span class="lineNum">     138 </span>            :         }
+<span class="lineNum">     139 </span>            :     }
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            :     // Remove all children nodes
+<span class="lineNum">     142 </span><span class="lineCov">       2640 :     treeChildren.clear();</span>
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            :     // Store parent information, since we will delete it
+<span class="lineNum">     145 </span><span class="lineCov">       2640 :     Blossom *parent = treeParentBlossom;</span>
+<span class="lineNum">     146 </span><span class="lineCov">       2640 :     Edge *parentEdge = treeParentEdge;</span>
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span><span class="lineCov">       2640 :     treeParentBlossom = nullptr;</span>
+<span class="lineNum">     149 </span><span class="lineCov">       2640 :     treeParentEdge = nullptr;</span>
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span>            :     // Store tree level, since making a dumbbell will delete it
+<span class="lineNum">     152 </span><span class="lineCov">       2640 :     TreeLevel oldTreeLevel = getTreeLevel();</span>
+<span class="lineNum">     153 </span>            : 
+<span class="lineNum">     154 </span>            :     // For a dumbbell with one of the children if needed
+<span class="lineNum">     155 </span><span class="lineCov">       2640 :     if (pair != nullptr)</span>
+<span class="lineNum">     156 </span><span class="lineCov">        619 :         makeDumbbellWith(pair, pairEdge);</span>
+<span class="lineNum">     157 </span>            : 
+<span class="lineNum">     158 </span>            :     // Recursively handle the parent blossom all the way to the root
+<span class="lineNum">     159 </span><span class="lineCov">       2640 :     if (parent == nullptr)</span>
+<span class="lineNum">     160 </span><span class="lineCov">       4042 :         return;</span>
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span>            :     // We need to find the vertex to which we connect in the parent blossom
+<span class="lineNum">     163 </span><span class="lineCov">       1238 :     Vertex *pv = parentEdge-&gt;getV1();</span>
+<span class="lineNum">     164 </span><span class="lineCov">       1238 :     if (pv-&gt;getOutermostBlossom() == this)</span>
+<span class="lineNum">     165 </span><span class="lineCov">        629 :         pv = parentEdge-&gt;getV2();</span>
+<span class="lineNum">     166 </span><span class="lineCov">       1238 :     ASSERT(pv-&gt;getOutermostBlossom() == parent, &quot;Neither edge endpoint in parent&quot;);</span>
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span>            :     // Flip the parent edge
+<span class="lineNum">     169 </span><span class="lineCov">       1238 :     parentEdge-&gt;flip();</span>
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span>            :     // For even level we are making dumbbell with a provided child blossom,
+<span class="lineNum">     172 </span>            :     // for odd level we will be making dumbbell with the parent and need to
+<span class="lineNum">     173 </span>            :     // provide pointer to us.
+<span class="lineNum">     174 </span><span class="lineCov">       1238 :     if (oldTreeLevel == TreeLevel::EVEN)</span>
+<span class="lineNum">     175 </span><span class="lineCov">        619 :         parent-&gt;flipPathAndDisassemble(pv);</span>
+<span class="lineNum">     176 </span>            :     else
+<span class="lineNum">     177 </span><span class="lineCov">        619 :         parent-&gt;flipPathAndDisassemble(pv, this, parentEdge);</span>
+<a name="178"><span class="lineNum">     178 </span>            : }</a>
+<span class="lineNum">     179 </span>            : 
+<span class="lineNum">     180 </span><span class="lineCov">       2780 : void Blossom::disassembleTreeIntoDumbbells()</span>
+<span class="lineNum">     181 </span>            : {
+<span class="lineNum">     182 </span><span class="lineCov">       2780 :     ASSERT(outwardBlossom == nullptr, &quot;This blossom is contained in another&quot;);</span>
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span>            :     // For even level blossoms recursively disassemble all odd level children
+<span class="lineNum">     185 </span><span class="lineCov">       2780 :     if (getTreeLevel() == TreeLevel::EVEN)</span>
+<span class="lineNum">     186 </span>            :     {
+<span class="lineNum">     187 </span><span class="lineCov">       2217 :         for (auto const&amp; child: treeChildren)</span>
+<span class="lineNum">     188 </span><span class="lineCov">        827 :             child-&gt;disassembleTreeIntoDumbbells();</span>
+<span class="lineNum">     189 </span>            : 
+<span class="lineNum">     190 </span>            :         // Clear children list and parent edge
+<span class="lineNum">     191 </span><span class="lineCov">       1390 :         treeChildren.clear();</span>
+<span class="lineNum">     192 </span><span class="lineCov">       1390 :         treeParentBlossom = nullptr;</span>
+<span class="lineNum">     193 </span><span class="lineCov">       1390 :         treeParentEdge = nullptr;</span>
+<span class="lineNum">     194 </span>            :     }
+<span class="lineNum">     195 </span>            :     else
+<span class="lineNum">     196 </span>            :     {
+<span class="lineNum">     197 </span>            :         // Odd level blossoms have exactly one even level child, form a dumbbell
+<span class="lineNum">     198 </span><span class="lineCov">       1390 :         ASSERT(treeChildren.size() == 1, &quot;Odd level blossom doesn't have one child&quot;);</span>
+<span class="lineNum">     199 </span>            : 
+<span class="lineNum">     200 </span>            :         // Store pointers to pair and connecting edge for later
+<span class="lineNum">     201 </span><span class="lineCov">       1390 :         Blossom *pair = treeChildren.front();</span>
+<span class="lineNum">     202 </span><span class="lineCov">       1390 :         Edge *pairEdge = treeChildren.front()-&gt;treeParentEdge;</span>
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span>            :         // First disassemble the pair recursively
+<span class="lineNum">     205 </span><span class="lineCov">       1390 :         pair-&gt;disassembleTreeIntoDumbbells();</span>
+<span class="lineNum">     206 </span>            : 
+<span class="lineNum">     207 </span>            :         // Clear children list and parent edge for this blossom, pair
+<span class="lineNum">     208 </span>            :         // will be cleared in the recursive call
+<span class="lineNum">     209 </span><span class="lineCov">       1390 :         treeChildren.clear();</span>
+<span class="lineNum">     210 </span><span class="lineCov">       1390 :         treeParentBlossom = nullptr;</span>
+<span class="lineNum">     211 </span><span class="lineCov">       1390 :         treeParentEdge = nullptr;</span>
+<span class="lineNum">     212 </span>            : 
+<span class="lineNum">     213 </span>            :         // Form a dumbbell
+<span class="lineNum">     214 </span><span class="lineCov">       1390 :         makeDumbbellWith(pair, pairEdge);</span>
+<span class="lineNum">     215 </span>            :     }
+<a name="216"><span class="lineNum">     216 </span><span class="lineCov">       2780 : }</span></a>
+<span class="lineNum">     217 </span>            : 
+<span class="lineNum">     218 </span><span class="lineCov">       3030 : void Blossom::flipPathBetween(Vertex *v1, Vertex *v2)</span>
+<span class="lineNum">     219 </span>            : {
+<span class="lineNum">     220 </span>            :     // Make sure v1 is the stem of current blossom
+<span class="lineNum">     221 </span><span class="lineCov">       3030 :     if (getStem() != v1)</span>
+<span class="lineNum">     222 </span><span class="lineCov">         31 :         std::swap(v1, v2);</span>
+<span class="lineNum">     223 </span><span class="lineCov">       3030 :     ASSERT(getStem() == v1, &quot;One of v1, v2 must be the stem&quot;);</span>
+<span class="lineNum">     224 </span>            : 
+<span class="lineNum">     225 </span>            :     // If we have no inner blossoms this must be the vertex level blossom
+<span class="lineNum">     226 </span>            :     // and thus v1 must equal v2 and nothing has to be done
+<span class="lineNum">     227 </span><span class="lineCov">       3030 :     if (innerChildren.size() == 0)</span>
+<span class="lineNum">     228 </span>            :     {
+<span class="lineNum">     229 </span><span class="lineCov">       2946 :         ASSERT(v1 == v2, &quot;v1 and v2 are not equal but in vertex together&quot;);</span>
+<span class="lineNum">     230 </span><span class="lineCov">       5976 :         return;</span>
+<span class="lineNum">     231 </span>            :     }
+<span class="lineNum">     232 </span>            : 
+<span class="lineNum">     233 </span>            :     // Find the child blossom to which v2 belongs
+<span class="lineNum">     234 </span><span class="lineCov">         84 :     Blossom *b2 = getInnerBlossomContaining(v2);</span>
+<span class="lineNum">     235 </span>            :     // We want a path of even length between the inner blossoms, we have odd
+<span class="lineNum">     236 </span>            :     // number of them, pick one of the directions.
+<span class="lineNum">     237 </span>            :     // We will go from first to last using the next blossom pointers,
+<span class="lineNum">     238 </span>            :     // potentially wrapping around at the end of the cycle
+<span class="lineNum">     239 </span><span class="lineCov">         84 :     Blossom *first = innerChildren[0];</span>
+<span class="lineNum">     240 </span><span class="lineCov">         84 :     Blossom *last = b2;</span>
+<span class="lineNum">     241 </span>            : 
+<span class="lineNum">     242 </span>            :     // Find the index of this blossom in the inner cycle to determine the direction
+<span class="lineNum">     243 </span><span class="lineCov">         84 :     auto b2_pos = std::find(innerChildren.begin(), innerChildren.end(), b2);</span>
+<span class="lineNum">     244 </span><span class="lineCov">         84 :     long pos = std::distance(innerChildren.begin(), b2_pos);</span>
+<span class="lineNum">     245 </span><span class="lineCov">         84 :     if (pos % 2 == 1)</span>
+<span class="lineNum">     246 </span>            :     {
+<span class="lineNum">     247 </span><span class="lineCov">         12 :         std::swap(v1, v2);</span>
+<span class="lineNum">     248 </span><span class="lineCov">         12 :         std::swap(first, last);</span>
+<span class="lineNum">     249 </span>            :     }
+<span class="lineNum">     250 </span>            : 
+<span class="lineNum">     251 </span>            :     // Now go from first to last, recursively handling each inner blossom
+<span class="lineNum">     252 </span>            :     // and flipping the edge connecting them.
+<span class="lineNum">     253 </span>            :     // v1 and v2 will always be the first and last vertex on this path,
+<span class="lineNum">     254 </span>            :     // which we need to update from the connecting edge.
+<span class="lineNum">     255 </span><span class="lineCov">         84 :     Blossom *current = first;</span>
+<span class="lineNum">     256 </span><span class="lineCov">        474 :     while (current != last)</span>
+<span class="lineNum">     257 </span>            :     {
+<span class="lineNum">     258 </span>            :         // v1 is the in the current inner blossom
+<span class="lineNum">     259 </span>            :         // One of the following will be the v2 for current blossom, make sure
+<span class="lineNum">     260 </span>            :         // it's b_v1 by swapping them
+<span class="lineNum">     261 </span><span class="lineCov">        306 :         Vertex *b_v1 = current-&gt;nextBlossomEdge-&gt;getV1();</span>
+<span class="lineNum">     262 </span><span class="lineCov">        306 :         Vertex *b_v2 = current-&gt;nextBlossomEdge-&gt;getV2();</span>
+<span class="lineNum">     263 </span><span class="lineCov">        306 :         if (getInnerBlossomContaining(b_v1) != current)</span>
+<span class="lineNum">     264 </span><span class="lineCov">        158 :             std::swap(b_v1, b_v2);</span>
+<span class="lineNum">     265 </span>            : 
+<span class="lineNum">     266 </span>            :         // Recursively flip path in the current inner blossom
+<span class="lineNum">     267 </span><span class="lineCov">        306 :         current-&gt;flipPathBetween(v1, b_v1);</span>
+<span class="lineNum">     268 </span>            :         // Flip the connecting edge
+<span class="lineNum">     269 </span><span class="lineCov">        306 :         current-&gt;nextBlossomEdge-&gt;flip();</span>
+<span class="lineNum">     270 </span>            : 
+<span class="lineNum">     271 </span>            :         // Advance to the next inner blossom, update v1
+<span class="lineNum">     272 </span><span class="lineCov">        306 :         current = getInnerBlossomContaining(b_v2);</span>
+<span class="lineNum">     273 </span><span class="lineCov">        306 :         v1 = b_v2;</span>
+<span class="lineNum">     274 </span>            :     }
+<span class="lineNum">     275 </span>            :     // Handle the last inner blossom - we just have to do a recursive call,
+<span class="lineNum">     276 </span>            :     // v1 and v2 are already set correctly
+<span class="lineNum">     277 </span><span class="lineCov">         84 :     last-&gt;flipPathBetween(v1, v2);</span>
+<span class="lineNum">     278 </span>            : 
+<span class="lineNum">     279 </span>            :     // Rotate the cycle of inner blossoms so that b2 is now the stem
+<span class="lineNum">     280 </span><span class="lineCov">         84 :     std::rotate(innerChildren.begin(), b2_pos, innerChildren.end());</span>
+<a name="281"><span class="lineNum">     281 </span>            : }</a>
+<span class="lineNum">     282 </span>            : 
+<span class="lineNum">     283 </span><span class="lineCov">       2244 : void Blossom::connectToTree(Blossom *parent, Edge *parentEdge)</span>
+<span class="lineNum">     284 </span>            : {
+<span class="lineNum">     285 </span><span class="lineCov">       2244 :     ASSERT(getTreeLevel() == TreeLevel::DUMBBELL, &quot;Not a dumbbell&quot;);</span>
+<span class="lineNum">     286 </span><span class="lineCov">       2244 :     ASSERT(parent-&gt;getTreeLevel() == TreeLevel::EVEN, &quot;Parent not on even level&quot;);</span>
+<span class="lineNum">     287 </span>            : 
+<span class="lineNum">     288 </span>            :     // Change from dumbbell to a odd-even tree pair, add other dumbbell pair
+<span class="lineNum">     289 </span>            :     // as a tree child
+<span class="lineNum">     290 </span><span class="lineCov">       2244 :     treeLevel = TreeLevel::ODD;</span>
+<span class="lineNum">     291 </span><span class="lineCov">       2244 :     treeChildren.push_back(treeParentBlossom);</span>
+<span class="lineNum">     292 </span><span class="lineCov">       2244 :     treeParentBlossom-&gt;treeLevel = TreeLevel::EVEN;</span>
+<span class="lineNum">     293 </span>            : 
+<span class="lineNum">     294 </span>            :     // Add self to parent's children, change parent edge
+<span class="lineNum">     295 </span><span class="lineCov">       2244 :     treeParentBlossom = parent;</span>
+<span class="lineNum">     296 </span><span class="lineCov">       2244 :     treeParentEdge = parentEdge;</span>
+<span class="lineNum">     297 </span><span class="lineCov">       2244 :     treeParentBlossom-&gt;treeChildren.push_back(this);</span>
+<a name="298"><span class="lineNum">     298 </span><span class="lineCov">       2244 : }</span></a>
+<span class="lineNum">     299 </span>            : 
+<span class="lineNum">     300 </span><span class="lineCov">       2782 : void Blossom::makeDumbbellWith(Blossom *pair, Edge *edge)</span>
+<span class="lineNum">     301 </span>            : {
+<span class="lineNum">     302 </span><span class="lineCov">       2782 :     ASSERT(this-&gt;outwardBlossom == nullptr, &quot;This blossom is contained in another&quot;);</span>
+<span class="lineNum">     303 </span><span class="lineCov">       2782 :     ASSERT(pair-&gt;outwardBlossom == nullptr, &quot;Other blossom is contained in another&quot;);</span>
+<span class="lineNum">     304 </span><span class="lineCov">       2782 :     ASSERT(this-&gt;treeChildren.size() == 0, &quot;This blossom still has tree children&quot;);</span>
+<span class="lineNum">     305 </span><span class="lineCov">       2782 :     ASSERT(pair-&gt;treeChildren.size() == 0, &quot;Other blossom still has tree children&quot;);</span>
+<span class="lineNum">     306 </span><span class="lineCov">       2782 :     ASSERT(this-&gt;treeParentBlossom == nullptr, &quot;This blossom still has tree parent&quot;);</span>
+<span class="lineNum">     307 </span><span class="lineCov">       2782 :     ASSERT(pair-&gt;treeParentBlossom == nullptr, &quot;Other blossom still has tree parent&quot;);</span>
+<span class="lineNum">     308 </span>            : 
+<span class="lineNum">     309 </span><span class="lineCov">       2782 :     ASSERT((edge-&gt;getV1() == getStem() &amp;&amp; edge-&gt;getV2() == pair-&gt;getStem()) ||</span>
+<span class="lineNum">     310 </span>            :            (edge-&gt;getV2() == getStem() &amp;&amp; edge-&gt;getV1() == pair-&gt;getStem()),
+<span class="lineNum">     311 </span><span class="lineNoCov">          0 :            &quot;Edge must be between stems&quot;);</span>
+<span class="lineNum">     312 </span>            : 
+<span class="lineNum">     313 </span>            :     // Set tree level, link together with the parent edge
+<span class="lineNum">     314 </span><span class="lineCov">       2782 :     this-&gt;treeLevel = TreeLevel::DUMBBELL;</span>
+<span class="lineNum">     315 </span><span class="lineCov">       2782 :     pair-&gt;treeLevel = TreeLevel::DUMBBELL;</span>
+<span class="lineNum">     316 </span>            : 
+<span class="lineNum">     317 </span><span class="lineCov">       2782 :     this-&gt;treeParentBlossom = pair;</span>
+<span class="lineNum">     318 </span><span class="lineCov">       2782 :     pair-&gt;treeParentBlossom = this;</span>
+<span class="lineNum">     319 </span><span class="lineCov">       2782 :     this-&gt;treeParentEdge = edge;</span>
+<span class="lineNum">     320 </span><span class="lineCov">       2782 :     pair-&gt;treeParentEdge = edge;</span>
+<a name="321"><span class="lineNum">     321 </span><span class="lineCov">       2782 : }</span></a>
+<span class="lineNum">     322 </span>            : 
+<span class="lineNum">     323 </span><span class="lineCov">         94 : Blossom* Blossom::makeBlossomWith(Blossom *pair, Edge *pairEdge)</span>
+<span class="lineNum">     324 </span>            : {
+<span class="lineNum">     325 </span><span class="lineCov">         94 :     ASSERT(this-&gt;outwardBlossom == nullptr, &quot;This blossom is contained in another&quot;);</span>
+<span class="lineNum">     326 </span><span class="lineCov">         94 :     ASSERT(pair-&gt;outwardBlossom == nullptr, &quot;Other blossom is contained in another&quot;);</span>
+<span class="lineNum">     327 </span>            : 
+<span class="lineNum">     328 </span>            :     // First find lowest common ancestor and paths to it
+<span class="lineNum">     329 </span><span class="lineCov">         94 :     std::list&lt;Blossom *&gt; ourPath;</span>
+<span class="lineNum">     330 </span><span class="lineCov">        188 :     std::list&lt;Blossom *&gt; pairPath;</span>
+<span class="lineNum">     331 </span><span class="lineCov">         94 :     ourPath.push_back(this);</span>
+<span class="lineNum">     332 </span><span class="lineCov">         94 :     pairPath.push_back(pair);</span>
+<span class="lineNum">     333 </span><span class="lineCov">       1150 :     while (ourPath.back()-&gt;treeParentBlossom != nullptr)</span>
+<span class="lineNum">     334 </span><span class="lineCov">        962 :         ourPath.push_back(ourPath.back()-&gt;treeParentBlossom);</span>
+<span class="lineNum">     335 </span><span class="lineCov">       1162 :     while (pairPath.back()-&gt;treeParentBlossom != nullptr)</span>
+<span class="lineNum">     336 </span><span class="lineCov">        974 :         pairPath.push_back(pairPath.back()-&gt;treeParentBlossom);</span>
+<span class="lineNum">     337 </span>            : 
+<span class="lineNum">     338 </span>            :     // LCA will be the one before first difference
+<span class="lineNum">     339 </span><span class="lineCov">         94 :     Blossom *LCA = nullptr;</span>
+<span class="lineNum">     340 </span><span class="lineCov">         94 :     ASSERT(ourPath.back() == pairPath.back(), &quot;Blossoms not in the same tree&quot;);</span>
+<span class="lineNum">     341 </span><span class="lineCov">       1705 :     while (ourPath.size() &gt; 0 &amp;&amp; pairPath.size() &gt; 0 &amp;&amp;</span>
+<span class="lineNum">     342 </span><span class="lineCov">        765 :            ourPath.back() == pairPath.back())</span>
+<span class="lineNum">     343 </span>            :     {
+<span class="lineNum">     344 </span><span class="lineCov">        752 :         LCA = ourPath.back();</span>
+<span class="lineNum">     345 </span><span class="lineCov">        752 :         ourPath.erase(std::prev(ourPath.end()));</span>
+<span class="lineNum">     346 </span><span class="lineCov">        752 :         pairPath.erase(std::prev(pairPath.end()));</span>
+<span class="lineNum">     347 </span>            :     }
+<span class="lineNum">     348 </span>            : 
+<span class="lineNum">     349 </span>            :     // From LCA and two path of even length now construct new blossom.
+<span class="lineNum">     350 </span><span class="lineCov">         94 :     ASSERT(ourPath.size() % 2 == 0, &quot;Path to LCA has odd length.&quot;);</span>
+<span class="lineNum">     351 </span><span class="lineCov">         94 :     ASSERT(pairPath.size() % 2 == 0, &quot;Path to LCA has odd length.&quot;);</span>
+<span class="lineNum">     352 </span><span class="lineCov">         94 :     ASSERT(LCA-&gt;getTreeLevel() == TreeLevel::EVEN, &quot;LCA not on even level.&quot;);</span>
+<span class="lineNum">     353 </span>            : 
+<span class="lineNum">     354 </span>            :     // Create new blossom,, by default on even level with zero charge
+<span class="lineNum">     355 </span><span class="lineCov">        188 :     std::shared_ptr&lt;Blossom&gt; newBlossom = std::make_shared&lt;Blossom&gt;();</span>
+<span class="lineNum">     356 </span>            : 
+<span class="lineNum">     357 </span>            :     // Replace LCA as the child of LCA's parent in the tree
+<span class="lineNum">     358 </span><span class="lineCov">         94 :     newBlossom-&gt;treeParentBlossom = LCA-&gt;treeParentBlossom;</span>
+<span class="lineNum">     359 </span><span class="lineCov">         94 :     newBlossom-&gt;treeParentEdge = LCA-&gt;treeParentEdge;</span>
+<span class="lineNum">     360 </span><span class="lineCov">         94 :     if (newBlossom-&gt;treeParentBlossom != nullptr)</span>
+<span class="lineNum">     361 </span>            :     {
+<span class="lineNum">     362 </span><span class="lineCov">         61 :         newBlossom-&gt;treeParentBlossom-&gt;treeChildren.remove(LCA);</span>
+<span class="lineNum">     363 </span><span class="lineCov">         61 :         newBlossom-&gt;treeParentBlossom-&gt;treeChildren.push_back(newBlossom.get());</span>
+<span class="lineNum">     364 </span>            :     }
+<span class="lineNum">     365 </span>            : 
+<span class="lineNum">     366 </span>            :     // Add all blossoms on the LCA path and LCA itself as inner blossoms, the
+<span class="lineNum">     367 </span>            :     // LCA will be the stem. To form a cycle one path must be reversed.
+<span class="lineNum">     368 </span>            :     //
+<span class="lineNum">     369 </span>            :     // Also store edges connecting each blossom to the next one in the cycle,
+<span class="lineNum">     370 </span>            :     // for the last one this is the edge to the LCA.
+<span class="lineNum">     371 </span><span class="lineCov">         94 :     newBlossom-&gt;innerChildren.push_back(LCA);</span>
+<span class="lineNum">     372 </span>            :     // First half of the cycle
+<span class="lineNum">     373 </span><span class="lineCov">         94 :     Blossom *previous = LCA;</span>
+<span class="lineNum">     374 </span><span class="lineCov">        398 :     for (auto it = ourPath.rbegin(); it != ourPath.rend(); ++it)</span>
+<span class="lineNum">     375 </span>            :     {
+<span class="lineNum">     376 </span><span class="lineCov">        304 :         newBlossom-&gt;innerChildren.push_back(*it);</span>
+<span class="lineNum">     377 </span>            :         // Going from LCA down, but parent edges are stored the other way
+<span class="lineNum">     378 </span><span class="lineCov">        304 :         previous-&gt;nextBlossomEdge = (*it)-&gt;treeParentEdge;</span>
+<span class="lineNum">     379 </span><span class="lineCov">        304 :         previous = *it;</span>
+<span class="lineNum">     380 </span>            :     }
+<span class="lineNum">     381 </span>            :     // Set the edge for the last blossom (which will be the current one)
+<span class="lineNum">     382 </span><span class="lineCov">         94 :     previous-&gt;nextBlossomEdge = pairEdge;</span>
+<span class="lineNum">     383 </span>            :     // Second half of the cycle
+<span class="lineNum">     384 </span><span class="lineCov">        410 :     for (auto it = pairPath.begin(); it != pairPath.end(); ++it)</span>
+<span class="lineNum">     385 </span>            :     {
+<span class="lineNum">     386 </span><span class="lineCov">        316 :         newBlossom-&gt;innerChildren.push_back(*it);</span>
+<span class="lineNum">     387 </span>            :         // Parent edges point the same way as the cycle direction
+<span class="lineNum">     388 </span><span class="lineCov">        316 :         (*it)-&gt;nextBlossomEdge = (*it)-&gt;treeParentEdge;</span>
+<span class="lineNum">     389 </span>            :     }
+<span class="lineNum">     390 </span>            : 
+<span class="lineNum">     391 </span>            :     // Store shared pointer to the new outer blossom
+<span class="lineNum">     392 </span><span class="lineCov">        808 :     for (auto const &amp;inner : newBlossom-&gt;innerChildren)</span>
+<span class="lineNum">     393 </span><span class="lineCov">        714 :         inner-&gt;outwardBlossom = newBlossom;</span>
+<span class="lineNum">     394 </span>            : 
+<span class="lineNum">     395 </span>            :     // Change all parent edges to point to the new blossom, add all children
+<span class="lineNum">     396 </span>            :     // which are outermost (that is, not part of this new blossom).
+<span class="lineNum">     397 </span><span class="lineCov">        808 :     for (auto const &amp;inner : newBlossom-&gt;innerChildren)</span>
+<span class="lineNum">     398 </span>            :     {
+<span class="lineNum">     399 </span><span class="lineCov">       1614 :         for (auto const &amp;child : inner-&gt;treeChildren)</span>
+<span class="lineNum">     400 </span>            :         {
+<span class="lineNum">     401 </span><span class="lineCov">        900 :             if (child-&gt;outwardBlossom == nullptr)</span>
+<span class="lineNum">     402 </span>            :             {
+<span class="lineNum">     403 </span><span class="lineCov">        280 :                 newBlossom-&gt;treeChildren.push_back(child);</span>
+<span class="lineNum">     404 </span><span class="lineCov">        280 :                 child-&gt;treeParentBlossom = newBlossom.get();</span>
+<span class="lineNum">     405 </span>            :             }
+<span class="lineNum">     406 </span>            :         }
+<span class="lineNum">     407 </span>            :     }
+<span class="lineNum">     408 </span>            : 
+<span class="lineNum">     409 </span><span class="lineCov">         94 :     newBlossom-&gt;outwardBlossom = nullptr;</span>
+<span class="lineNum">     410 </span>            : 
+<span class="lineNum">     411 </span>            :     // If the LCA was the root of this tree we need to exchange it
+<span class="lineNum">     412 </span><span class="lineCov">         94 :     if (LCA-&gt;treeParentEdge == nullptr)</span>
+<span class="lineNum">     413 </span><span class="lineCov">         33 :         return newBlossom.get();</span>
+<span class="lineNum">     414 </span><span class="lineCov">        155 :     return nullptr;</span>
+<a name="415"><span class="lineNum">     415 </span>            : }</a>
+<span class="lineNum">     416 </span>            : 
+<span class="lineNum">     417 </span><span class="lineCov">         35 : void Blossom::disassembleBlossom()</span>
+<span class="lineNum">     418 </span>            : {
+<span class="lineNum">     419 </span>            :     // Disassemble current blossom into tree and dumbbells
+<span class="lineNum">     420 </span><span class="lineCov">         35 :     ASSERT(outwardBlossom == nullptr, &quot;This blossom is contained in another&quot;);</span>
+<span class="lineNum">     421 </span><span class="lineCov">         35 :     ASSERT(getTreeLevel() == TreeLevel::ODD, &quot;This blossom is not on odd level&quot;);</span>
+<span class="lineNum">     422 </span><span class="lineCov">         35 :     ASSERT(treeChildren.size() == 1, &quot;Odd level blossom doesn't have one child&quot;);</span>
+<span class="lineNum">     423 </span>            : 
+<span class="lineNum">     424 </span>            :     // Child blossom is connected to the stem inner blossom
+<span class="lineNum">     425 </span><span class="lineCov">         35 :     Edge *childEdge = treeChildren.front()-&gt;treeParentEdge;</span>
+<span class="lineNum">     426 </span><span class="lineCov">         35 :     ASSERT(childEdge-&gt;getV1() == getStem() || childEdge-&gt;getV2() == getStem(),</span>
+<span class="lineNum">     427 </span><span class="lineNoCov">          0 :            &quot;Child blossom must be connected to the stem&quot;);</span>
+<span class="lineNum">     428 </span>            : 
+<span class="lineNum">     429 </span>            :     // Parent blossom is connected to one of the inner blossoms
+<span class="lineNum">     430 </span>            :     Blossom *parentInner;
+<span class="lineNum">     431 </span><span class="lineCov">         35 :     if (treeParentEdge-&gt;getV1()-&gt;getOutermostBlossom() == this)</span>
+<span class="lineNum">     432 </span><span class="lineCov">         19 :         parentInner = getInnerBlossomContaining(treeParentEdge-&gt;getV1());</span>
+<span class="lineNum">     433 </span>            :     else
+<span class="lineNum">     434 </span><span class="lineCov">         16 :         parentInner = getInnerBlossomContaining(treeParentEdge-&gt;getV2());</span>
+<span class="lineNum">     435 </span>            : 
+<span class="lineNum">     436 </span>            :     // Find the index of this blossom in the inner cycle
+<span class="lineNum">     437 </span><span class="lineCov">         35 :     auto parentInner_pos = std::find(innerChildren.begin(), innerChildren.end(), parentInner);</span>
+<span class="lineNum">     438 </span><span class="lineCov">         35 :     int pos = std::distance(innerChildren.begin(), parentInner_pos);</span>
+<span class="lineNum">     439 </span>            : 
+<span class="lineNum">     440 </span>            :     // The tree part will be formed from the even length path, the odd length path
+<span class="lineNum">     441 </span>            :     // will be split into dumbbells
+<span class="lineNum">     442 </span>            :     // We need to set the appropriate tree level and child/parent pointers
+<span class="lineNum">     443 </span><span class="lineCov">         35 :     int N = innerChildren.size();</span>
+<span class="lineNum">     444 </span>            :     // We will cycle from start to end, modulo N, setting pointers to parent
+<span class="lineNum">     445 </span>            :     // from i+diff, edge pointers from i+ediff, with stem being the index of
+<span class="lineNum">     446 </span>            :     // the stem in the cycle
+<span class="lineNum">     447 </span><span class="lineCov">         35 :     int start = 0;</span>
+<span class="lineNum">     448 </span><span class="lineCov">         35 :     int end = pos;</span>
+<span class="lineNum">     449 </span><span class="lineCov">         35 :     int diff = 1;</span>
+<span class="lineNum">     450 </span><span class="lineCov">         35 :     int ediff = 0;</span>
+<span class="lineNum">     451 </span><span class="lineCov">         35 :     int stem = 0;</span>
+<span class="lineNum">     452 </span>            :     // For odd length we go the other way around, wrapping around at the end
+<span class="lineNum">     453 </span><span class="lineCov">         35 :     if (pos % 2 == 1)</span>
+<span class="lineNum">     454 </span>            :     {
+<span class="lineNum">     455 </span><span class="lineCov">          7 :         start = pos;</span>
+<span class="lineNum">     456 </span><span class="lineCov">          7 :         end = stem = N;</span>
+<span class="lineNum">     457 </span><span class="lineCov">          7 :         diff = ediff = -1;</span>
+<span class="lineNum">     458 </span>            :     }
+<span class="lineNum">     459 </span>            : 
+<span class="lineNum">     460 </span><span class="lineCov">        224 :     for (int i = start; i &lt;= end; i++)</span>
+<span class="lineNum">     461 </span>            :     {
+<span class="lineNum">     462 </span>            :         // Tree level will be odd for stem and then alternates
+<span class="lineNum">     463 </span><span class="lineCov">        189 :         innerChildren[i%N]-&gt;treeLevel = (i % 2 == stem % 2) ? TreeLevel::ODD : TreeLevel::EVEN;</span>
+<span class="lineNum">     464 </span>            :         // Set parent to next inner blossom, except for the last one which
+<span class="lineNum">     465 </span>            :         // will be the child of the current parent.
+<span class="lineNum">     466 </span><span class="lineCov">        189 :         innerChildren[i%N]-&gt;treeParentBlossom =</span>
+<span class="lineNum">     467 </span><span class="lineCov">        189 :                 (i == pos) ? treeParentBlossom : innerChildren[i+diff];</span>
+<span class="lineNum">     468 </span><span class="lineCov">        189 :         innerChildren[i%N]-&gt;treeParentEdge =</span>
+<span class="lineNum">     469 </span><span class="lineCov">        189 :                 (i == pos) ? treeParentEdge : innerChildren[i+ediff]-&gt;nextBlossomEdge;</span>
+<span class="lineNum">     470 </span>            :         // Add previous inner blossom to children, except for the stem which
+<span class="lineNum">     471 </span>            :         // will be the parent of current child.
+<span class="lineNum">     472 </span><span class="lineCov">        189 :         innerChildren[i%N]-&gt;treeChildren.clear();</span>
+<span class="lineNum">     473 </span><span class="lineCov">        189 :         innerChildren[i%N]-&gt;treeChildren.push_back(</span>
+<span class="lineNum">     474 </span><span class="lineCov">        189 :                 (i == stem) ? treeChildren.front() : innerChildren[(i-diff)%N]</span>
+<span class="lineNum">     475 </span><span class="lineCov">        567 :         );</span>
+<span class="lineNum">     476 </span>            :     }
+<span class="lineNum">     477 </span>            : 
+<span class="lineNum">     478 </span>            :     // Exchange child pointer for parent from this blossom to inner one
+<span class="lineNum">     479 </span><span class="lineCov">         35 :     treeParentBlossom-&gt;treeChildren.remove(this);</span>
+<span class="lineNum">     480 </span><span class="lineCov">         35 :     treeParentBlossom-&gt;treeChildren.push_back(innerChildren[pos]);</span>
+<span class="lineNum">     481 </span>            :     // Set parent blossom to stem for the child, parent edge already set
+<span class="lineNum">     482 </span><span class="lineCov">         35 :     treeChildren.front()-&gt;treeParentBlossom = innerChildren[0];</span>
+<span class="lineNum">     483 </span>            : 
+<span class="lineNum">     484 </span>            :     // To delete this blossom we reset all outward pointers to it
+<span class="lineNum">     485 </span><span class="lineCov">         35 :     std::shared_ptr&lt;Blossom&gt; thiscopy = innerChildren.front()-&gt;outwardBlossom;</span>
+<span class="lineNum">     486 </span><span class="lineCov">        368 :     for (auto const&amp; inner: innerChildren)</span>
+<span class="lineNum">     487 </span><span class="lineCov">        333 :         inner-&gt;outwardBlossom.reset();</span>
+<span class="lineNum">     488 </span>            : 
+<span class="lineNum">     489 </span>            :     // Take the remaining odd length cycle range and disassemble it
+<span class="lineNum">     490 </span>            :     // into dumbbells. Go in the direction of next pointers
+<span class="lineNum">     491 </span><span class="lineCov">        214 :     for (int i = (pos % 2 == 0) ? pos + 1 : 1;</span>
+<span class="lineNum">     492 </span><span class="lineCov">        107 :          (pos % 2 == 0) ? i &lt; N : i &lt; pos;</span>
+<span class="lineNum">     493 </span>            :          i+=2)
+<span class="lineNum">     494 </span>            :     {
+<span class="lineNum">     495 </span><span class="lineCov">         72 :         innerChildren[i]-&gt;treeChildren.clear();</span>
+<span class="lineNum">     496 </span><span class="lineCov">         72 :         innerChildren[i+1]-&gt;treeChildren.clear();</span>
+<span class="lineNum">     497 </span><span class="lineCov">         72 :         innerChildren[i]-&gt;treeParentBlossom = nullptr;</span>
+<span class="lineNum">     498 </span><span class="lineCov">         72 :         innerChildren[i+1]-&gt;treeParentBlossom = nullptr;</span>
+<span class="lineNum">     499 </span>            : 
+<span class="lineNum">     500 </span><span class="lineCov">        144 :         innerChildren[i]-&gt;makeDumbbellWith(innerChildren[i+1],</span>
+<a name="501"><span class="lineNum">     501 </span><span class="lineCov">        216 :                                            innerChildren[i]-&gt;nextBlossomEdge);</span></a>
+<span class="lineNum">     502 </span><span class="lineCov">         35 :     }</span>
+<span class="lineNum">     503 </span><span class="lineCov">         38 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
